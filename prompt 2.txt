@@ -1,0 +1,183 @@
+Perfecto. Asumo el rol.
+
+Voy a ser claro desde el principio: **PALEX no es una “web con pelis”**, es un **sistema compartido con perspectiva doble**. Eso condiciona toda la arquitectura. Si esto se hace mal al inicio, luego duele. Así que iremos despacio y bien.
+
+No avanzo de fase sin tu validación.
+
+---
+
+# FASE 1 — ESTRUCTURA DEL PROYECTO (MVC liviano)
+
+## 🎯 Objetivo de esta fase
+
+Definir una estructura **clara, escalable y comprensible**, sin frameworks, que:
+
+* Separe lógica, datos y vistas
+* Permita PWA sin hacks
+* Sea mantenible aunque solo haya 2 usuarios
+* No se convierta en un spaghetti PHP emocional (ya hay suficiente drama en el cine)
+
+---
+
+## 🧠 Principios arquitectónicos
+
+1. **MVC simple, no dogmático**
+
+   * Nada de sobreingeniería
+   * Controllers finos, lógica en servicios
+2. **Todo pasa por un Front Controller**
+
+   * Un solo `index.php`
+3. **Usuario siempre presente**
+
+   * No existe acción sin usuario
+4. **Pensado para crecer**
+
+   * API externa (TMDB)
+   * Más listas
+   * Más estados
+
+---
+
+## 📁 Estructura propuesta
+
+```
+/palex
+│
+├── public/                  # Raíz pública
+│   ├── index.php             # Front Controller
+│   ├── manifest.json         # PWA
+│   ├── sw.js                 # Service Worker
+│   ├── assets/
+│   │   ├── css/
+│   │   │   └── app.css
+│   │   ├── js/
+│   │   │   └── app.js
+│   │   └── images/
+│   │       └── placeholders/
+│
+├── app/
+│   ├── config/
+│   │   ├── config.php        # Config general
+│   │   └── database.php      # Conexión MySQL
+│   │
+│   ├── core/
+│   │   ├── Router.php
+│   │   ├── Controller.php
+│   │   ├── Model.php
+│   │   ├── View.php
+│   │   ├── Auth.php          # Login persistente
+│   │   └── Session.php
+│   │
+│   ├── controllers/
+│   │   ├── AuthController.php
+│   │   ├── MovieController.php
+│   │   ├── InteractionController.php
+│   │   └── ListController.php
+│   │
+│   ├── models/
+│   │   ├── User.php
+│   │   ├── Movie.php
+│   │   ├── Interaction.php
+│   │   └── List.php
+│   │
+│   ├── services/
+│   │   ├── MovieService.php
+│   │   ├── InteractionService.php
+│   │   └── StateService.php  # Estados compartidos
+│   │
+│   └── views/
+│       ├── layouts/
+│       │   └── main.php
+│       ├── auth/
+│       ├── movies/
+│       ├── lists/
+│       └── partials/
+│
+├── storage/
+│   └── cache/                # Offline / PWA support
+│
+├── .htaccess
+└── README.md
+```
+
+---
+
+## 🔁 Flujo de ejecución
+
+1. **Todas las peticiones entran por**
+
+   ```
+   public/index.php
+   ```
+
+2. El Router:
+
+   * Lee la URL
+   * Decide controlador + acción
+
+3. El Controller:
+
+   * Valida usuario
+   * Llama a servicios
+
+4. Los Services:
+
+   * Contienen la lógica real
+   * Calculan estados compartidos
+   * Preparan datos para la vista
+
+5. La View:
+
+   * Solo renderiza
+   * Nada de SQL
+   * Nada de lógica compleja
+
+---
+
+## 🔐 Autenticación (visión anticipada)
+
+* Login **una sola vez**
+* Cookie + sesión
+* `Auth::user()` disponible globalmente
+* Hard limit:
+
+  ```php
+  if (count(users) > 2) abort();
+  ```
+
+Nada de registros públicos. Esto es un club privado.
+
+---
+
+## 🎨 UX desde la estructura
+
+Desde esta fase ya pensamos UX:
+
+* Layout único (`layouts/main.php`)
+* Componentes reutilizables
+* Colores y avatar del usuario disponibles en todas las vistas
+* Visualización comparativa siempre posible
+
+---
+
+## 📦 Ventajas de esta estructura
+
+✔ Fácil de entender
+✔ No depende de frameworks
+✔ PWA-friendly
+✔ Preparada para TMDB
+✔ Ideal para solo 2 usuarios
+✔ No te odias dentro de 6 meses
+
+---
+
+## ❓ Validación requerida
+
+Antes de avanzar necesito que confirmes:
+
+1. ¿Te parece correcta esta **estructura MVC liviana**?
+2. ¿Quieres **URLs limpias** tipo `/movies/123`?
+3. ¿Aceptamos que **toda lógica de estados compartidos** viva en `StateService`?
+
+Respóndeme eso y **pasamos a FASE 2: Base de Datos**, donde empieza lo divertido (y lo peligroso).
