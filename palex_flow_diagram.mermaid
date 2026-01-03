@@ -1,0 +1,45 @@
+graph TD
+    Start([Usuario accede a PALEX]) --> IndexPHP[public/index.php<br/>Front Controller]
+    
+    IndexPHP --> Auth{¿Usuario<br/>autenticado?}
+    Auth -->|No| Login[AuthController<br/>Mostrar login]
+    Auth -->|Sí| Router[Router<br/>Analiza URL]
+    
+    Login --> SessionCheck[Session::start<br/>Validar credenciales]
+    SessionCheck --> SetUser[Auth::setUser<br/>Cookie + Sesión]
+    SetUser --> Router
+    
+    Router --> Route{Tipo de<br/>petición}
+    
+    Route -->|/movies| MovieCtrl[MovieController]
+    Route -->|/lists| ListCtrl[ListController]
+    Route -->|/interact| InteractCtrl[InteractionController]
+    
+    MovieCtrl --> MovieService[MovieService<br/>Lógica de películas]
+    ListCtrl --> ListService[ListService<br/>Gestión de listas]
+    InteractCtrl --> InteractService[InteractionService<br/>Votos, estados]
+    
+    MovieService --> StateService[StateService<br/>Estados compartidos<br/>Perspectiva doble]
+    InteractService --> StateService
+    ListService --> StateService
+    
+    StateService --> Models[(Models<br/>Movie, User,<br/>Interaction, List)]
+    Models --> DB[(MySQL<br/>Base de datos)]
+    
+    StateService --> PrepareData[Preparar datos<br/>para vista]
+    PrepareData --> View[View<br/>Renderizar HTML]
+    
+    View --> Layout[layouts/main.php<br/>+ Componentes]
+    Layout --> Response[Respuesta HTML<br/>+ PWA assets]
+    
+    Response --> Cache[Service Worker<br/>Cache offline]
+    Cache --> Display([Mostrar en<br/>navegador])
+    
+    Display -.->|Nueva acción| IndexPHP
+    
+    style IndexPHP fill:#ff6b6b
+    style Router fill:#4ecdc4
+    style StateService fill:#ffe66d
+    style DB fill:#95e1d3
+    style Auth fill:#f38181
+    style Display fill:#aa96da
