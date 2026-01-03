@@ -1,0 +1,118 @@
+Quiero que actúes como un arquitecto de software senior y diseñador UX.
+
+Vamos a construir un proyecto llamado PALEX.
+
+PALEX es una Progressive Web App (PWA) privada, inspirada fuertemente en Letterboxd, diseñada exclusivamente para una pareja (máximo 2 usuarios).
+
+🧠 OBJETIVO
+Crear una web app cinematográfica compartida, donde ambos usuarios interactúan sobre una misma base de películas, pero con acciones individuales (vistas, puntuaciones, reseñas), y con visualización compartida y comparativa.
+
+---
+
+🧱 TECNOLOGÍAS
+- HTML
+- CSS
+- PHP puro (sin frameworks)
+- MySQL
+- Arquitectura MVC liviana
+- Pensado para localhost (escala futura)
+
+---
+
+👥 USUARIOS
+- Máximo 2 usuarios (hard limit)
+- Usuarios creados manualmente
+- Cada usuario tiene:
+  - nombre
+  - avatar
+  - color personal
+- Login persistente (solo se pide una vez)
+- Toda acción debe registrar qué usuario la realizó
+
+---
+
+🎬 PELÍCULAS
+- Cada película existe una sola vez
+- Datos:
+  - título
+  - año
+  - géneros
+  - imagen (placeholder al inicio)
+- Carga:
+  - Manual (fase inicial)
+  - Preparado para futura integración con API externa (TMDB)
+
+---
+
+⭐ INTERACCIONES
+Cada usuario puede:
+- Marcar vista / no vista
+- Puntuar con número (1–5)
+- Mostrar estrellas visuales según el número
+- Escribir:
+  - comentario corto visible
+  - reseña larga accesible desde “Ver reseña”
+- Al marcar como vista:
+  - se abre automáticamente la vista para puntuar y opinar
+
+El sistema debe:
+- Mostrar puntuaciones individuales
+- Calcular promedio
+- Indicar coincidencias o diferencias
+
+---
+
+❤️ ESTADOS COMPARTIDOS
+- Pendiente para ver
+- Vista por uno
+- Vista por ambos
+- Recomendada por X usuario
+
+Los estados se recalculan automáticamente.
+
+---
+
+📋 LISTAS
+- Todas las listas son compartidas
+- Ejemplos:
+  - Para ver
+  - Vistas juntos
+  - Favoritas
+  - Uno la vio / el otro no
+- Funcionan también como filtros visuales
+
+---
+
+📱 UX / UI
+- Responsive (mobile first)
+- Modo oscuro permanente
+- Estilo minimalista y romántico
+- Paleta principal: verde + violeta
+- Inspiración visual: Letterboxd pero más íntimo
+
+---
+
+📶 PWA
+- Instalación en pantalla de inicio
+- Offline:
+  - lectura de datos
+  - navegación
+- Online:
+  - carga y modificación
+
+---
+
+📐 DESARROLLO
+Quiero que el desarrollo sea:
+- Paso a paso
+- Modular
+- Con explicaciones claras
+- Empezando por:
+  1. Estructura del proyecto
+  2. Base de datos
+  3. Login
+  4. CRUD de películas
+  5. Interacciones
+  6. PWA
+
+No avances sin validar cada etapa conmigo.
