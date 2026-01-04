@@ -1,0 +1,51 @@
+graph TD
+    Start([Pablo busca Jurassic Park<br/>GET /movies/search?q=jurassic]) --> SearchDB{¿Existe en movies?}
+    
+    SearchDB -->|No| TMDB[Llama TMDB API<br/>Busca Jurassic Park]
+    TMDB --> InsertMovie[INSERT INTO movies<br/>id: 329<br/>title: Jurassic Park<br/>year: 1993<br/>poster_path: /abc.jpg]
+    
+    InsertMovie --> InsertGenres[INSERT INTO movie_genres<br/>329, Action<br/>329, Sci-Fi<br/>329, Adventure]
+    
+    SearchDB -->|Sí| LoadMovie[SELECT * FROM movies<br/>WHERE id = 329]
+    InsertGenres --> LoadMovie
+    
+    LoadMovie --> CheckViews[SELECT * FROM views<br/>WHERE movie_id = 329]
+    
+    CheckViews --> ViewResult{Resultado}
+    ViewResult -->|0 filas| StateNone[Estado: PENDIENTE<br/>Ninguno la vio]
+    ViewResult -->|1 fila user_id=1| StatePablo[Estado: VISTA POR PABLO<br/>Alex pendiente]
+    ViewResult -->|2 filas| StateBoth[Estado: VISTA POR AMBOS]
+    
+    StatePablo --> CheckReviews[SELECT * FROM reviews<br/>WHERE movie_id = 329<br/>AND user_id = 1]
+    
+    CheckReviews --> ReviewResult{¿Tiene review?}
+    ReviewResult -->|No| NoOpinion[Pablo vio pero no opinó]
+    ReviewResult -->|Sí| HasOpinion[rating: 5<br/>comment: Obra maestra]
+    
+    NoOpinion --> RenderView[Renderiza vista:<br/>- Poster Jurassic Park<br/>- Borde ROJO Pablo<br/>- Botón Añadir opinión<br/>- Alex sin ver]
+    HasOpinion --> RenderView
+    
+    RenderView --> Display([Muestra interfaz comparativa])
+    
+    Display -->|Alex clica Marcar vista| MarkSeen[POST /interact/mark-seen/329]
+    MarkSeen --> InsertView[INSERT INTO views<br/>user_id: 2 Alex<br/>movie_id: 329<br/>watched_at: NOW]
+    
+    InsertView --> RecalcState[StateService recalcula:<br/>SELECT COUNT FROM views<br/>WHERE movie_id = 329<br/>RESULT: 2 filas]
+    
+    RecalcState --> NewState[Nuevo estado: VISTA POR AMBOS<br/>Disponible para lista Vistas Juntos]
+    
+    NewState -->|Sistema detecta ambos vieron| AutoList[Verifica lista system<br/>SELECT * FROM lists<br/>WHERE name = Vistas Juntos<br/>AND system = true]
+    
+    AutoList --> AddToList[INSERT INTO list_movies<br/>list_id: 1<br/>movie_id: 329]
+    
+    AddToList -->|Alex agrega rating| AddReview[INSERT INTO reviews<br/>user_id: 2<br/>movie_id: 329<br/>rating: 4<br/>comment: Entretenida]
+    
+    AddReview --> CalcMetrics[StateService calcula:<br/>Pablo: 5★<br/>Alex: 4★<br/>Promedio: 4.5★<br/>Diferencia: 1★<br/>COINCIDENCIA ALTA]
+    
+    CalcMetrics --> FinalView([Muestra vista actualizada:<br/>- Ambos lados con color<br/>- Ratings comparados<br/>- En lista Vistas Juntos<br/>- Métrica coincidencia])
+    
+    style InsertMovie fill:#ff6b6b
+    style CheckViews fill:#ffe66d
+    style CalcMetrics fill:#4ecdc4
+    style TMDB fill:#00d9ff
+    style FinalView fill:#aa96da
